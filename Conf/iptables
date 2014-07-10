@@ -1,0 +1,28 @@
+--list -L [chain [rulenum]] 	List the rules in a chain or all chains(FORWARD, INPUT, OUTPUT, POSTROUTING, PREROUTING)
+--table	-t table	    	Table to manipulate (default: `filter', nat....)
+--append  -A chain	   	Append to chain
+--in-interface -i inputname	Network interface name
+--out-interface -o outputname	Network interface name
+--jump	-j target		Target for rule (MASQUERADE)
+
+
+
+nat table:
+                  This table is consulted when a packet that creates a new connection is encountered.  It  consists  of
+                  three  built-ins:  PREROUTING  (for  altering  packets as soon as they come in), OUTPUT (for altering
+                  locally-generated packets before routing), and POSTROUTING (for altering packets as they are about to
+                  go out).
+
+
+connmark
+       This module matches the netfilter mark field associated with a connection (which can be set using the CONNMARK target below).
+       [!] --mark value[/mask]
+       Matches packets in connections with the given mark value (if a mask is specified, this is logically ANDed
+       with the mark before the comparison).
+
+
+conntrack
+       This module, when combined with connection tracking, allows access to the connection  tracking  state  for  this
+       packet/connection.
+       [!] --ctstate statelist
+              statelist is a comma separated list of the connection states to match.

@@ -1,0 +1,77 @@
+***********
+Server Conf
+***********
+#apt-get install nfs-kernel-server
+
+NFS daemon listens on both UDP and TCP 2049 ports.
+
+Check if the NFS server is running:
+# rpcinfo -p | grep nfs
+
+Check whether the system supports NFS:
+# cat /proc/filesystems | grep nfs 
+
+When installed correctly, the NFS daemon should be listening on both UDP and TCP 2049 port 
+and portmap should be waiting for instructions on port 111.
+# rpcinfo -p | grep portmap
+
+All directories we want to share over the network using NFS need to be defined on the server side of this communication 
+and more specifically they need to be defined with /etc/exports file.
+
+Share a new folder:
+#vim /etc/exports
+	/home/hatim/Bureau/SFC/ 10.1.0.1/24(rw,all_squash,anonuid=1000,anongid=1000,sync)
+
+ <shared folder> <host1>(<options>) <host2>(<options>)... 
+
+ <host1>, <host2> define who can have access the shared folder
+ <options> : 
+    rw : permet la lecture et l'écriture sur un partage pour l'hôte défini (par défaut, les partages sont en mode ro; c'est-à-dire en lecture seule).
+    async : permet au serveur NFS de violer le protocole NFS et de répondre aux requêtes avant que les changements effectués par la requête aient été appliqués sur l'unité de stockage.
+            Cette option améliore les performances mais a un coût au niveau de l'intégrité des données (données corrompues ou perdues) en cas de redémarrage non-propre
+	    (par exemple en cas de crash système).
+    sync : est le contraire de async. Le serveur NFS respecte le protocole NFS.
+    root_squash : force le mapping de l'utilisateur root vers l'utilisateur anonyme (option par défaut).
+    no_root_squash : n'effectue pas de mapping pour l'utilisateur root.
+    all_squash : force le mapping de tous les utilisateurs vers l'utilisateur anonyme.
+    anonuid (anongid): indique au serveur NFS l'UID (GID) de l'utilisateur anonyme (considéré comme tel dans les précédentes options de mapping).
+
+Restart service:
+Once you have edited /etc/exports file you need to restart your NFS daemon to apply any changes.
+# /etc/init.d/nfs-kernel-server restart 
+or
+#service nfs-kernel-server reload
+
+If you later decide to add more NFS exports to the /etc/exports file, you will need to either restart NFS daemon or run command exportfs:
+# exportfs -ra 
+
+
+*************
+Client Config
+*************
+# apt-get install nfs-common
+
+# mkdir /media/NFS
+
+# mount [-t nfs] [-o nfsvers=3] 10.1.0.99:/home/hatim/Bureau/SFC/ /media/NFS 
+
+# mount 10.10.0.1:/media/NFS-Server/ /media/NFS 
+
+Configure automount:
+# vim /etc/fstab
+	10.10.0.1:/media/NFS-Server/ /media/NFS nfs defaults,user 0 0        
+	10.10.0.1:/home/hatim/Bureau/SFC/ /media/NFS nfs defaults,user 0 0
+	10.1.0.99:/home/hatim/Bureau/SFC/ /media/NFS nfs defaults,user,auto,noatime,intr 0 0
+
+*defaults,user,auto,noatime,intr sont des options de montage, vous pouvez ajouter ,ro à la fin pour ne pas autoriser l'écriture.
+*0 0 dit à Linux de ne pas vérifier si le disque contient des erreurs (le serveur s'en occupera)
+*user: allows other users to mount
+
+
+
+**********
+References
+**********
+http://tldp.org/HOWTO/NFS-HOWTO/index.html
+http://how-to.linuxcareer.com/how-to-configure-nfs-on-linux
+http://doc.ubuntu-fr.org/nfs

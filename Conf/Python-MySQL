@@ -1,0 +1,91 @@
+What is MySQLdb?
+	MySQLdb is an interface for connecting to a MySQL database server from Python.
+	It implements the Python Database API v2.0 and is built on top of the MySQL C API.
+
+Installation
+	# apt-get install mysql-server
+	+
+	# apt-get install python-mysqldb
+
+	Or
+	# apt-get install mysql-server
+	+
+	# apt-get install libmysqlclient-dev 
+	$ gunzip MySQL-python-1.2.2.tar.gz
+	$ tar -xvf MySQL-python-1.2.2.tar
+	$ cd MySQL-python-1.2.2
+	$ python setup.py build
+	$ python setup.py install
+
+	>>>import MySQLdb
+
+Création de la BD de test:
+	CREATE DATABASE testdb; #Respecter la casse dans le nom de la table
+	CREATE DATABASE SFC; 
+	USE testdb;
+
+	CREATE TABLE employee
+	(
+	    id MEDIUMINT NOT NULL AUTO_INCREMENT,
+	    fname VARCHAR(20) NOT NULL,
+	    lname VARCHAR(20) NOT NULL,
+	    income INT NOT NULL,
+	    age INT NOT NULL,
+	    sex CHAR NOT NULL,
+	    PRIMARY KEY (id)
+	);
+	SHOW columns FROM employee;
+
+Création d'un utilisateur pour accéder à la BD de test:
+	CREATE USER 'hatimux'@'localhost' IDENTIFIED BY 'sfc123';
+	GRANT ALL PRIVILEGES ON testdb.* TO 'hatimux'@'localhost';
+
+	CREATE USER 'sfcuser'@'localhost' IDENTIFIED BY 'sfc123';
+	GRANT ALL PRIVILEGES ON SFC.* TO 'sfcuser'@'localhost';
+
+	CREATE USER 'remote'@'10.1.0.99' IDENTIFIED BY 'sfc123';
+	GRANT ALL PRIVILEGES ON SFC.* TO 'remote'@'10.1.0.99';
+
+How does it work from python:
+	If a connection is established with the datasource, then a Connection Object
+	is returned and saved into db for further use, otherwise db is set to None. 
+	Next, db object is used to create a cursor object, which in turn is used to 
+	execute SQL queries. Finally, before coming out, it ensures that database 
+	connection is closed and resources are released.
+
+READ Operation:
+	READ Operation on any databasse means to fetch some useful information from the database.
+	Once our database connection is established, we are ready to make a query into this database.
+	We can use either fetchone() method to fetch single record or fetchall() method to fetech multiple values from a database table.
+	    	fetchone(): This method fetches the next row of a query result set.
+			    A result set is an object that is returned when a cursor object is used to query a table.
+		fetchall(): This method fetches all the rows in a result set.
+			    If some rows have already been extracted from the result set, the fetchall() method retrieves the remaining rows from the result set.
+	  	rowcount  : This is a read-only attribute and returns the number of rows that were affected by an execute() method.
+
+UPDATE Operation:
+	UPDATE Operation on any databasse means to update one or more records, which are already available in the database. 
+
+DELETE Operation:
+	DELETE operation is required when you want to delete some records from your database
+
+Performing Transactions:
+	Transactions are a mechanism that ensures data consistency. Transactions should have the following four properties:
+	    Atomicity: Either a transaction completes or nothing happens at all.
+	    Consistency: A transaction must start in a consistent state and leave the system in a consistent state.
+	    Isolation: Intermediate results of a transaction are not visible outside the current transaction.
+	    Durability: Once a transaction was committed, the effects are persistent, even after a system failure.
+
+	COMMIT Operation:
+	Commit is the operation, which gives a green signal to database to finalize the changes,and after this operation, no change can be reverted back.
+
+	ROLLBACK Operation:
+	If you are not satisfied with one or more of the changes and you want to revert back those changes completely, then use rollback() method.
+
+Disconnecting Database:
+	If the connection to a database is closed by the user with the close() method,
+	any outstanding transactions are rolled back by the DB. However, instead of 
+	depending on any of DB lower level implementation details, your application 
+	would be better off calling commit or rollback explicitly.
+
+REF: http://www.tutorialspoint.com/python/python_database_access.htm

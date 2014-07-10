@@ -1,0 +1,16 @@
+classification rules:
+
+@dst = "10.1.0.1" => 1 
+@dst = "10.2.0.1" => 2  
+@dst = "10.1.0.2" => 3 
+@dst = "10.2.0.2" => 4
+@dst = "10.3.0.3" => 6
+@dst = "10.4.0.3" => 5
+
+FTP   : TCP.port = 21 => 7
+SSH   : TCP.port = 22 => 8
+Telnet: TCP.port = 23 => 9
+HTTP  : TCP.port = 80 => 10
+HTTPS : TCP.port = 443 => 10
+DNS   : UDP.port = 53 => 11
+DHCP  : UDP.port = 546 => 12

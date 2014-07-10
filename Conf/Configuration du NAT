@@ -1,0 +1,32 @@
+Sur une machine dans le réseau local:
+1**Stop network-manager
+#service network-manager stop
+
+2**Configure eth0 (l'interface connectée à la machine qui a accès à internet)
+$ifconfig eth0 10.1.0.2 netmask 255.255.255.0
+
+3**Ajouter l'interface de la machine connectée sur internet comme route par défaut:
+$route add default gw 10.1.0.1
+
+4**Ajout d'un serveur DNS:
+Modification du fichier /etc/resolv.conf:
+nameserver 10.4.0.1 (eth1 connectée à internet)
+
+
+Sur la machine connectée à Internet:
+1**Chargement du module nat dans le noyau
+#modprobe iptable_nat
+
+2**Activation du forwarding
+#echo 1 > /proc/sys/net/ipv4/ip_forward
+
+3**Définition des règles du NAT (avant que le paquet soit transmis on change son adresse source)
+#iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+4**Accepter les paquets qui sont diffusés sur l'interface eth0 (celle connectée au réseau local)
+iptables -A FORWARD -i eth0 -j ACCEPT
+
+5**Instalation d'un serveur dns:
+#apt-get install dnsmasq
+This server is used to resolve Ip addresses of host names.
+

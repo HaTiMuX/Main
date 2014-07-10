@@ -1,0 +1,12 @@
+###[ DIAG_REQUEST ]###
+  REQ_ID    = 0
+  SF_Map_Index= 2
+  SF_ID_Len = 3
+  SF_ID     = 'SF4'
+  ES_SF_ID_Len= 0
+  ES_SF_ID  = ''
+  TestPacket= 0
+###[ DIAG_RESPONSE ]###
+     REQ_ID    = 0
+     STATUS    = SUCCESS
+     ERROR     = NO_ERROR

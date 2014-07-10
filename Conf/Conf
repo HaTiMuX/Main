@@ -1,0 +1,104 @@
+#########
+Contents
+########
+*Run MySQL Triggers
+*iptables rules examples
+*Save iptables rules
+*Define new Kernel Routing Table
+*Maintain IP Forwarding
+*Tunnels
+*Disactivate Network Manager from boot
+*Disactivate Apparmor
+*SSH connection
+
+
+******************
+Run MySQL Triggers
+******************
+
+
+***********************
+iptables rules examples
+***********************
+Defining filtring Rule 
+iptables -t nat -A PREROUTING -m dscp --dscp 32 -j MARK --set-mark 3
+#iptables -t mangle -A FORWARD -p icmp -m tos --tos 3 -j MARK,NFQUEUE --set-mark 3
+#iptables -t mangle -A FORWARD -p icmp -m tos --tos 3 -j MARK, NFQUEUE --set-mark 3 --queue-num 0
+#iptables -t mangle -A PREROUTING -m dscp --dscp 32 -j MARK --set-mark 3 -g NFQUEUE --queue-num 0
+#iptables -t filter -i eth1 -p icmp -A FORWARD -j NFQUEUE --queue-num 0
+#iptables -t nat -i eth1 -p icmp -A PREROUTING -j NFQUEUE --queue-num 0
+
+*******************
+Save iptables rules
+*******************
+we save our rules in a file like this:
+#iptables-save > /etc/iptables_rules.save
+
+We load our rules from a file using:
+#iptables-restore < /etc/iptables_rules.save
+
+*******************************
+Define new Kernel Routing Table
+*******************************
+#ip route add table 10
+#ip route add table 10 10.4.0.0/24 via 10.2.0.1
+#ip rule add tos 0x1E table 30
+
+***********************
+Maintain IP Forwarding
+***********************
+modify /etc/sysctl.conf
+net.ipv4.ip_forward=1
+
+*******
+Tunnels
+*******
+Host1:
+#iptunnel add tunl1 mode ipip local 10.1.0.99 remote 10.1.0.1
+#ifconfig tunl1 192.168.0.10 pointopoint 192.168.0.20
+
+Host2:
+#iptunnel add tunl1 mode ipip local 10.1.0.1 remote 10.1.0.99
+#ifconfig tunl1 192.168.0.20 pointopoint 192.168.0.10
+
+*************************************
+Disactivate Network Manager from boot
+*************************************
+# update-rc.d network-manager remove
+or
+Change the names of its start-up files
+#mv /etc/init/network-manager.conf /etc/init/network-manager.conf-disabled
+#mv /etc/xdg/autostart/nm-applet.desktop /etc/xdg/autostart/nm-applet.desktop.disabled
+
+Uninstall definitly
+#rm /etc/init/network-manager.conf-disabled /etc/xdg/autostart/nm-applet.desktop.disabled
+
+Force NetworkManager to keep manuel configuration
+	Modify /etc/NetworkManager/NetworkManager.conf:
+	[ifupdown]
+	managed=true
+
+
+********************
+Disactivate Apparmor
+********************
+
+**************
+SSH Connection
+**************
+Install SSH server:
+#apt-get install openssh-server
+#ssh -V
+
+Connection:
+#ssh hatim@10.1.0.1
+
+IPv6 Connection:
+Activate in /etc/ssh/sshd_config option:
+ListenAddress ::
+#ssh -6 <user>@<ipv6 address> 
+
+********
+
+#Flush an interface:
+ip addr flush eth1
